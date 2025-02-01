@@ -3,23 +3,14 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
 const PostsPage = async () => {
-  const posts = await prisma.post.findMany({
+  // const posts = await prisma.post.findMany();
+  const user = await prisma.user.findUnique({
     where: {
-      title: {
-        contains: "post",
-      },
+      email: "hassam@gmail.com",
     },
-    orderBy: {
-      createdAt: "desc",
+    include: {
+      posts: true,
     },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-    },
-    //Used for pagination
-    // take:10,
-    // skip:2,
   });
   const postsCount = await prisma.post.count();
 
@@ -28,7 +19,7 @@ const PostsPage = async () => {
       <h1 className="text-3xl font-semibold">All Posts {postsCount}</h1>
 
       <ul className="border-t border-b border-white/10 py-5 leading-8">
-        {posts.map((post) => (
+        {user?.posts.map((post) => (
           <li key={post.id} className="flex items-center justify-between px-5">
             <Link href={`/posts/${post.slug}`}>{post.title}</Link>
           </li>
